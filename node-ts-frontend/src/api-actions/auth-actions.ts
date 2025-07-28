@@ -40,7 +40,7 @@ export const AuthActions = {
          throw error; 
        }
     },
-    verify_email  :  async (data : {identifier: string, password: string}) : Promise<{
+    verify_email  :  async (data : {email: string, verification_code: string}) : Promise<{
         message : string,
         user : IUser
     }> => {

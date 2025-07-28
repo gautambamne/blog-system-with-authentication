@@ -267,7 +267,6 @@ export const LogoutUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const VerifyEmail = asyncHandler(async (req: Request, res: Response) => {
   
-  console.log("VerifyEmail called");
   const { email, verification_code } = req.body;
     console.log("Email:", email, "Verification Code:", verification_code);
   if (!email || !verification_code) {

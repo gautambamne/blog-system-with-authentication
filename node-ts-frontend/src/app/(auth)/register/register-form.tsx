@@ -21,12 +21,17 @@ export type RegisterFormData = z.infer<typeof RegisterUserSchema>
 import withGuest from "@/components/hoc/with-guest"
 import { EqualApproximately } from "lucide-react"
 
+
 function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-
   const [isLoading, setIsLoading] = useState(false)
+  const [showOtp, setShowOtp] = useState(false)
+  const [email, setEmail] = useState("")
+  const [verification_code, setVerification_code] = useState("")
+  const [otpLoading, setOtpLoading] = useState(false)
+
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterUserSchema),
     defaultValues: {
@@ -42,13 +47,33 @@ function RegisterForm({
     setIsLoading(true)
     AuthActions.register(values)
       .then(() => {
-        toast.success("Registration successful!")
+        setEmail(values.email)
+        setShowOtp(true)
+        toast.success("Registration successful! Please check your email for the OTP.")
       })
       .catch((error) => {
         toast.error(error.response?.data.apiError.message || "Registration failed.")
       })
       .finally(() => {
         setIsLoading(false)
+      })
+  }
+
+  function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault()
+    setOtpLoading(true)
+    AuthActions.verify_email({ email, verification_code })
+      .then(() => {
+        toast.success("Email verified successfully!")
+        setShowOtp(false)
+        setVerification_code("")
+        form.reset()
+      })
+      .catch((error) => {
+        toast.error(error.response?.data.apiError.message || "OTP verification failed.")
+      })
+      .finally(() => {
+        setOtpLoading(false)
       })
   }
 
@@ -60,78 +85,97 @@ function RegisterForm({
           Enter your details below to create your account
         </p>
       </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+      {!showOtp ? (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="johndoe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="m@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirm_password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              Create Account
+            </Button>
+          </form>
+        </Form>
+      ) : (
+        <form onSubmit={handleVerifyOtp} className="grid gap-6">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h2 className="text-xl font-semibold">Verify OTP</h2>
+            <p className="text-muted-foreground text-sm">Enter the OTP sent to your email</p>
+          </div>
+          <Input
+            type="text"
+            placeholder="Enter OTP"
+            value={verification_code}
+            onChange={e => setVerification_code(e.target.value)}
+            required
           />
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="johndoe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="m@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirm_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            Create Account
+          <Button type="submit" className="w-full" disabled={otpLoading}>
+            {otpLoading ? "Verifying..." : "Verify OTP"}
           </Button>
         </form>
-      </Form>
+      )}
       <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
         <span className="bg-background text-muted-foreground relative z-10 px-2">
           Or continue with

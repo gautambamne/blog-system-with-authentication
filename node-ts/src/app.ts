@@ -11,8 +11,8 @@ const app = express();
 // cors middleware to allow cross-origin requests
 app.use(cors({
     origin: [
-        'http://localhost:3000'
-    ], 
+        process.env.CORS_ORIGIN || 'http://localhost:3000' // Add any other allowed origins here
+    ],
     credentials: true 
 }));
 // Parse JSON bodies

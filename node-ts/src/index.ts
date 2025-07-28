@@ -3,7 +3,7 @@ import 'dotenv/config';
 import { connectManagedDb } from "./db/connect-db";
 // import { connectManagedDb } from "./db/connect-db";
 
-const PORT = process.env.PORT || 3000;
+const PORT = 5000;
 
 
 connectManagedDb()
