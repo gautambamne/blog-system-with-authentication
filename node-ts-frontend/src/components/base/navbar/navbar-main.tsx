@@ -54,7 +54,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-16 items-center px-4">
         {/* Mobile menu */}
         <Sheet>
           <SheetTrigger asChild>
@@ -63,7 +63,7 @@ export function Navbar() {
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+          <SheetContent side="left" className="w-[300px] sm:w-[400px] px-6">
             <nav className="flex flex-col gap-4">
               <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
                 <BookOpen className="h-6 w-6" />
@@ -157,13 +157,15 @@ export function Navbar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
+                  <Link href={`/${user?.username}`} className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span >Profile</span>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />

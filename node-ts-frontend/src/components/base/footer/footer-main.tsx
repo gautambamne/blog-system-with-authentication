@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 export function FooterMain() {
   return (
     <footer className="border-t bg-background">
-      <div className="container py-12 md:py-16">
+      <div className="container py-12 md:py-16 px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand and description */}
           <div className="space-y-4">
@@ -120,7 +120,7 @@ export function FooterMain() {
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-            <p className="text-sm text-muted-foreground">© 2024 BlogApp. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">© 2025 BlogApp. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Privacy Policy

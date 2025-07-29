@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-        <Navbar/>
+      <Navbar/>
       {children}
       <FooterMain/>
     </div>
