@@ -16,8 +16,8 @@ export default function Home() {
   const [pagination, setPagination] = useState<IPaginationInfo | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  
-  const { user, isAuthenticated } = useAuthStore();
+
+  const { isAuthenticated } = useAuthStore();
 
   const fetchPosts = async (page: number = 1, append: boolean = false) => {
     try {
@@ -28,16 +28,15 @@ export default function Home() {
       }
 
       const response = await PostActions.getAllPosts(page, 10);
-      
+
       if (append) {
         setPosts(prev => [...prev, ...response.posts]);
       } else {
         setPosts(response.posts);
       }
-      
+
       setPagination(response.pagination);
       setCurrentPage(page);
-      
     } catch (error: any) {
       console.error('Error fetching posts:', error);
       toast.error('Failed to load posts', {
@@ -63,6 +62,10 @@ export default function Home() {
     fetchPosts(1, false);
   };
 
+  const handlePostDelete = (postId: string) => {
+    setPosts(prev => prev.filter(post => post._id !== postId));
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-8 px-4">
@@ -73,7 +76,6 @@ export default function Home() {
               Discover amazing stories and insights from our community
             </p>
           </div>
-          
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="space-y-3">
@@ -102,7 +104,6 @@ export default function Home() {
               </p>
             )}
           </div>
-          
           <div className="flex items-center space-x-3">
             <Button
               variant="outline"
@@ -113,7 +114,6 @@ export default function Home() {
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            
             {isAuthenticated && (
               <Link href="/posts">
                 <Button size="sm">
@@ -130,7 +130,11 @@ export default function Home() {
           <div className="space-y-8">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onPostDelete={handlePostDelete} // make sure this prop is passed
+                />
               ))}
             </div>
 

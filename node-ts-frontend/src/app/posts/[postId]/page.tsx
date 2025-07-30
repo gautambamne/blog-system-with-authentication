@@ -1,28 +1,35 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CalendarDays } from 'lucide-react';
-import { PostActions } from '@/api-actions/post-actions';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, CalendarDays } from "lucide-react";
+import { PostActions } from "@/api-actions/post-actions";
+import { Skeleton } from "@/components/ui/skeleton";
+import React from "react";
 
-const formatDate = (date?: string | Date | number) => {
-  if (!date) return 'Just now';
-  const d = new Date(date);
-  if (isNaN(d.getTime())) {
-    return 'Invalid date';
-  }
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+function formatDate(input?: string | Date | number): string {
+  if (!input) return "Just now";
+  const date = new Date(input);
+  if (isNaN(date.getTime())) return "Just now";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
-};
+}
+
+
 
 function PostPageSkeleton() {
   return (
@@ -53,8 +60,12 @@ function PostPageSkeleton() {
   );
 }
 
-export default function PostPage({ params }: { params: { postId: string } }) {
-  const { postId } = params;
+export default function PostPage({
+  params,
+}: {
+  params: Promise<{ postId: string }>;
+}) {
+  const { postId } = React.use(params);
   const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -78,9 +89,13 @@ export default function PostPage({ params }: { params: { postId: string } }) {
   if (loading) {
     return <PostPageSkeleton />;
   }
-  
+
   if (!post) {
-    return <div className="flex items-center justify-center h-screen">Post not found</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Post not found
+      </div>
+    );
   }
 
   const author = post.user;
@@ -106,16 +121,24 @@ export default function PostPage({ params }: { params: { postId: string } }) {
             <div className="flex items-center space-x-4 pt-6">
               <Avatar className="h-12 w-12">
                 <AvatarImage
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${author?.name || 'A'}`}
-                  alt={author?.name || 'Author'}
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${
+                    author?.name || "A"
+                  }`}
+                  alt={author?.name || "Author"}
                 />
-                <AvatarFallback className="text-xl">{author?.name?.charAt(0) || 'A'}</AvatarFallback>
+                <AvatarFallback className="text-xl">
+                  {author?.name?.charAt(0) || "A"}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-lg">{author?.name || 'Unknown Author'}</p>
+                <p className="font-semibold text-lg">
+                  {author?.name || "Unknown Author"}
+                </p>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CalendarDays className="size-4" />
-                  <time dateTime={String(post.createdAt)}>{formatDate(post.createdAt)}</time>
+                  <time dateTime={String(post.createdAt)}>
+                    {formatDate(post.createdAt)}
+                  </time>
                 </div>
               </div>
             </div>
