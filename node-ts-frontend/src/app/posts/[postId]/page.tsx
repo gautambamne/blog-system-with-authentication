@@ -68,16 +68,6 @@ export default function PostPage({
   const { postId } = React.use(params);
   const [post, setPost] = useState<IPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setEditing] = React.useState(false);
-
-  const handleEditPost = (updatedPost: IPost) => {
-    setPost(updatedPost);
-    setEditing(false);
-  };
-
-  const handleCancelEdit = () => {
-    setEditing(false);
-  };
   
   useEffect(() => {
     if (postId) {
