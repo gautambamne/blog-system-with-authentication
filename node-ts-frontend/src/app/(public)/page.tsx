@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import useAuthStore from "../../../store/auth-store";
-import { PostActions } from '@/api-actions/post-actions';
-import PostCard from '@/components/base/post/post-card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCw, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { PostActions } from "@/api-actions/post-actions";
+import PostCard from "@/components/base/post/post-card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { RefreshCw, Plus } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -16,8 +17,10 @@ export default function Home() {
   const [pagination, setPagination] = useState<IPaginationInfo | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+   
 
   const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   const fetchPosts = async (page: number = 1, append: boolean = false) => {
     try {
@@ -30,7 +33,7 @@ export default function Home() {
       const response = await PostActions.getAllPosts(page, 10);
 
       if (append) {
-        setPosts(prev => [...prev, ...response.posts]);
+        setPosts((prev) => [...prev, ...response.posts]);
       } else {
         setPosts(response.posts);
       }
@@ -38,9 +41,10 @@ export default function Home() {
       setPagination(response.pagination);
       setCurrentPage(page);
     } catch (error: any) {
-      console.error('Error fetching posts:', error);
-      toast.error('Failed to load posts', {
-        description: error?.message || 'Something went wrong. Please try again.',
+      console.error("Error fetching posts:", error);
+      toast.error("Failed to load posts", {
+        description:
+          error?.message || "Something went wrong. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -63,19 +67,25 @@ export default function Home() {
   };
 
   const handlePostDelete = (postId: string) => {
-    setPosts(prev => prev.filter(post => post._id !== postId));
+    setPosts((prev) => prev.filter((post) => post._id !== postId));
   };
+  const handleEditPost = (post: IPost) => {
+    router.push(`/posts/${post._id}/update`);
+  }
 
   if (isLoading) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold tracking-tight">Welcome to Our Blog</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Welcome to Our Blog
+            </h1>
             <p className="text-muted-foreground mt-2 text-lg">
               Discover amazing stories and insights from our community
             </p>
           </div>
+
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="space-y-3">
@@ -94,7 +104,9 @@ export default function Home() {
         {/* Header Section */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Welcome to Our Blog</h1>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Welcome to Our Blog
+            </h1>
             <p className="text-muted-foreground mt-2 text-lg">
               Discover amazing stories and insights from our community
             </p>
@@ -104,6 +116,7 @@ export default function Home() {
               </p>
             )}
           </div>
+
           <div className="flex items-center space-x-3">
             <Button
               variant="outline"
@@ -114,6 +127,7 @@ export default function Home() {
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
+
             {isAuthenticated && (
               <Link href="/posts">
                 <Button size="sm">
@@ -133,9 +147,12 @@ export default function Home() {
                 <PostCard
                   key={post._id}
                   post={post}
-                  onPostDelete={handlePostDelete} // make sure this prop is passed
+                  onPostDelete={handlePostDelete}
+                  onEdit={handleEditPost}
                 />
               ))}
+            </div>
+            <div>
             </div>
 
             {/* Load More Button */}
@@ -153,7 +170,7 @@ export default function Home() {
                       Loading...
                     </>
                   ) : (
-                    'Load More Posts'
+                    "Load More Posts"
                   )}
                 </Button>
               </div>
@@ -188,3 +205,4 @@ export default function Home() {
     </div>
   );
 }
+
